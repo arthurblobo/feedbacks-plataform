@@ -35,9 +35,19 @@
    <script>
         document.getElementById("btn-transcrever")
         .addEventListener("click", async () => {
-            const reposta = await fetch("/ping");
-            const texto = await reposta.text();
-            document.getElementById("res-transcricao").textContent = texto;
+            const reposta = await fetch("/transcrever", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    tema: document.getElementById("tema").value,
+                    conteudo: document.getElementById("conteudo").value,
+                    fotos: Array.from(document.getElementById("fotos").files).map(file => file.name)
+                })
+            });
+            const texto = await reposta.json();
+            document.getElementById("res-transcricao").textContent = JSON.stringify(texto);
 });
    </script>
 </body>

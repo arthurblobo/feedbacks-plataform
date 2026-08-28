@@ -6,8 +6,13 @@ Regra geral: só passe para a etapa seguinte quando o critério de
 pronto da atual estiver cumprido. Faça um commit ao fim de cada
 etapa.
 
-**Estado atual:** sem crédito na API. As etapas 4 a 6 usam mock
-(respostas falsas). A integração real acontece na etapa 7.
+**Estado atual:** sem crédito na API. Todo o desenvolvimento
+local (etapas 1 a 8) usa mock. A integração real é o primeiro
+passo da etapa 9, imediatamente antes do deploy.
+
+**Antes de colocar crédito:** teste a leitura de folhas reais no
+chat do Claude. O mock valida a construção; só a leitura real
+valida a ideia.
 
 ---
 
@@ -126,31 +131,22 @@ avançar e o servidor confirma o recebimento das 5.
 
 ---
 
-## Etapa 7 — A integração real
+## Etapa 7 — Polir a interface
 
-Esta é a etapa que exige crédito na API.
+Ainda com mock.
 
-**Construir:** dentro do `claude.js`, a chamada real à API da
-Anthropic, usando os prompts de `prompts.md`. Trocar `USAR_MOCK`
-para `false`. Adicionar a segunda função, `gerarFeedbacks()`, e a
-área editável para a professora conferir a transcrição antes de
-gerar.
+**Construir:** CSS para deixar a página apresentável. A área
+editável onde a professora confere a transcrição antes de gerar
+os feedbacks. Botão de copiar em cada feedback. Mensagens de erro
+legíveis quando algo falha.
 
-**Instalar:** `npm install @anthropic-ai/sdk dotenv`
+**Aprender:** noções de CSS, o que é um `<textarea>`, como copiar
+para a área de transferência pelo navegador.
 
-**Criar:** o `.env` com a chave. Confirme antes que o
-`.gitignore` já tem a linha `.env`.
+**Pronto quando:** você mostra a tela para sua amiga e ela
+entende o que fazer sem você explicar.
 
-**Aprender:** o que é uma variável de ambiente, por que a chave
-fica no servidor, o que é um SDK, o que é um system prompt.
-
-**Se algum arquivo além do `claude.js` precisar mudar muito
-aqui**, a separação da etapa 4 não ficou boa. Vale revisar.
-
-**Pronto quando:** o fluxo completo funciona com fotos reais e o
-resultado é bom o suficiente para sua amiga usar.
-
-**Commit:** `etapa 7: integração com a api`
+**Commit:** `etapa 7: interface finalizada`
 
 ---
 
@@ -168,13 +164,44 @@ que é uma sessão.
 
 ---
 
-## Etapa 9 — Deploy
+## Etapa 9 — Integração real e deploy
+
+Esta é a única etapa que exige crédito na API. Faça na ordem.
+
+### 9a — Trocar o mock pela API, ainda local
+
+**Instalar:** `npm install @anthropic-ai/sdk dotenv`
+
+**Criar:** o `.env` com a chave. Confirme antes que o
+`.gitignore` já tem a linha `.env`.
+
+**Construir:** dentro do `claude.js`, a chamada real usando os
+prompts de `prompts.md`. Trocar `USAR_MOCK` para `false`.
+
+**Aprender:** o que é uma variável de ambiente, por que a chave
+fica no servidor, o que é um SDK, o que é um system prompt.
+
+**Espere quebrar aqui.** A resposta real vem em formato
+diferente do mock que você inventou: pode ter texto antes da
+tabela, colunas com nome ligeiramente diferente, quebras de linha
+em outro lugar. Ajustar isso é trabalho normal, e é muito mais
+fácil no seu terminal do que na nuvem.
+
+**Se algum arquivo além do `claude.js` precisar mudar muito**, a
+separação da etapa 4 não ficou boa. Vale revisar.
+
+**Pronto quando:** o fluxo completo funciona local, com fotos
+reais, e o resultado é bom o suficiente para sua amiga usar.
+
+**Commit:** `etapa 9a: integração com a api`
+
+### 9b — Subir
+
+**Antes:** configurar o limite de gasto mensal no Console da
+Anthropic e desligar o auto-reload.
 
 **Construir:** subir para o Cloudflare ou Render. A chave vira
 variável de ambiente na plataforma, nunca vai junto com o código.
-
-**Antes:** configurar o limite de gasto mensal no Console da
-Anthropic.
 
 **Aprender:** a diferença entre rodar local e em produção, o que
 é uma variável de ambiente na nuvem.
@@ -182,7 +209,7 @@ Anthropic.
 **Pronto quando:** sua amiga acessa de outro computador, faz
 login e gera os feedbacks dela.
 
-**Commit:** `etapa 9: deploy`
+**Commit:** `etapa 9b: deploy`
 
 ---
 
