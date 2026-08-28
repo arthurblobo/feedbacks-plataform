@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeWork-Analysys</title>
+</head>
+<body>
+   <div class="cabecalho">
+        <h1>Feedback atividades</h1>
+        <h3>Envie as fotos das atividades</h3>
+   </div>
+   <div class="escopo-transcricao">
+        <h4>Tema da atividade</h4>
+        <input id="tema" type="text" placeholder="Digite o tema da atividade">
+         <h4>Conteúdo cobrado</h4>
+         <textarea id="conteudo" placeholder="Digite o conteúdo cobrado na atividade"></textarea>
+         <h4>Fotos das atividades</h4>
+        <input type="file" id="fotos" accept="image/*" multiple>
+         <button id="btn-transcrever">Transcrever</button>
+   </div>
+   <div class="escopo-geracao">
+        <h2>Confira a transcrição</h2>
+        <h4>Corrija o que estiver errado antes de gerar os feedbacks.</h4>
+        <!-- Tabela com a transcrição -->
+         <button id="btn-gerar-feedbacks">Gerar feedbacks</button>
+   </div>
+   <div class="feedbacks-gerados">
+        <h2>Feedbacks</h2>
+        <!-- Caixa com o feedback do aluno -->
+   </div>
+</body>
+</html>
