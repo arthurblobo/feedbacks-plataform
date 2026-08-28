@@ -6,6 +6,9 @@ Regra geral: só passe para a etapa seguinte quando o critério de
 pronto da atual estiver cumprido. Faça um commit ao fim de cada
 etapa.
 
+**Estado atual:** sem crédito na API. As etapas 4 a 6 usam mock
+(respostas falsas). A integração real acontece na etapa 7.
+
 ---
 
 ## Etapa 1 — A página, sem funcionar
@@ -62,40 +65,48 @@ página.
 
 ---
 
-## Etapa 4 — Primeira resposta da API
+## Etapa 4 — A rota de transcrição, com mock
 
-**Construir:** o servidor chama a API da Anthropic com um texto
-fixo (algo como "responda apenas OK") e devolve a resposta para a
-página.
+**Construir:** o arquivo `claude.js` com a função `transcrever()`
+e a flag `USAR_MOCK`. Por enquanto ela devolve uma tabela fixa,
+escrita à mão por você. No `server.js`, uma rota
+`POST /transcrever` que chama essa função. O botão "Transcrever"
+da página chama a rota e mostra o resultado.
 
-**Instalar:** `npm install @anthropic-ai/sdk dotenv`
+**Aprender:** diferença entre GET e POST, o que é JSON, como o
+navegador envia dados no corpo de uma requisição, o que faz
+`module.exports`.
 
-**Criar:** o arquivo `.env` com sua chave. Confirme antes que o
-`.gitignore` já tem a linha `.env`.
+**A descobrir sozinho:** como o Express lê o corpo de um POST
+(procure `express.json()`); como fazer `fetch` mandar POST (ele
+aceita um segundo argumento); como ler uma resposta JSON (existe
+um irmão do `.text()`).
 
-**Aprender:** o que é uma variável de ambiente, por que a chave
-fica no servidor, o que é um SDK.
+**Sugestão para o mock:** escreva uma tabela com 5 alunos e
+inclua um `[ilegível]` e um `[nome não identificado]`. Testar só
+com dado perfeito esconde problemas.
 
-**Pronto quando:** você clica no botão e uma resposta escrita
-pelo Claude aparece na página. Este é o marco mais importante do
-projeto.
+**Pronto quando:** você clica em "Transcrever" e a tabela falsa
+aparece na página.
 
-**Commit:** `etapa 4: integração com a api`
+**Commit:** `etapa 4: rota de transcrição com mock`
 
 ---
 
-## Etapa 5 — Uma imagem
+## Etapa 5 — A imagem chega ao servidor
 
-**Construir:** trocar o texto fixo por uma imagem enviada pelo
-formulário. Uma só, por enquanto.
+**Construir:** o formulário envia a imagem selecionada para o
+servidor. O servidor confirma que recebeu, imprimindo no console
+o tamanho e o tipo do arquivo. A resposta continua vindo do mock.
 
 **Aprender:** o que é base64, por que a imagem precisa virar
 texto para trafegar, como o `FileReader` funciona no navegador.
 
-**Pronto quando:** você envia a foto de uma atividade e o Claude
-descreve ou transcreve o que está nela.
+**Pronto quando:** você seleciona uma foto, clica no botão, e o
+terminal do servidor imprime algo como "recebida imagem de
+340 KB". A tabela falsa continua aparecendo na tela.
 
-**Commit:** `etapa 5: envio de imagem`
+**Commit:** `etapa 5: envio de imagem para o servidor`
 
 ---
 
@@ -109,29 +120,37 @@ reduz cada imagem. Enviar uma de cada vez, mostrando o progresso
 elemento `canvas`, o que significa código assíncrono.
 
 **Pronto quando:** você envia 5 fotos de uma vez, vê o progresso
-avançar e recebe as 5 respostas.
+avançar e o servidor confirma o recebimento das 5.
 
 **Commit:** `etapa 6: lote de imagens com redimensionamento`
 
 ---
 
-## Etapa 7 — Os prompts de verdade
+## Etapa 7 — A integração real
 
-**Construir:** o botão "Transcrever" usa o prompt de extração e
-mostra a tabela numa área editável, para conferência. O botão
-"Gerar feedbacks" pega a tabela revisada e aplica o prompt de
-feedback.
+Esta é a etapa que exige crédito na API.
 
-Os dois prompts estão em `prompts.md`.
+**Construir:** dentro do `claude.js`, a chamada real à API da
+Anthropic, usando os prompts de `prompts.md`. Trocar `USAR_MOCK`
+para `false`. Adicionar a segunda função, `gerarFeedbacks()`, e a
+área editável para a professora conferir a transcrição antes de
+gerar.
 
-**Aprender:** o que é um system prompt, por que separar
-transcrição de geração, por que a conferência humana no meio
-importa.
+**Instalar:** `npm install @anthropic-ai/sdk dotenv`
+
+**Criar:** o `.env` com a chave. Confirme antes que o
+`.gitignore` já tem a linha `.env`.
+
+**Aprender:** o que é uma variável de ambiente, por que a chave
+fica no servidor, o que é um SDK, o que é um system prompt.
+
+**Se algum arquivo além do `claude.js` precisar mudar muito
+aqui**, a separação da etapa 4 não ficou boa. Vale revisar.
 
 **Pronto quando:** o fluxo completo funciona com fotos reais e o
 resultado é bom o suficiente para sua amiga usar.
 
-**Commit:** `etapa 7: prompts de transcrição e feedback`
+**Commit:** `etapa 7: integração com a api`
 
 ---
 
