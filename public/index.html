@@ -33,41 +33,63 @@
         <!-- Caixa com o feedback do aluno -->
    </div>
    <script>
-        function lerComoBase64(arquivo) {
-  return new Promise((resolve, reject) => {
-    const leitor = new FileReader();
-    leitor.onload = () => resolve(leitor.result);
-    leitor.onerror = reject;
-    leitor.readAsDataURL(arquivo);
+        function redimensionarImagem(arquivo, larguraMaxima, alturaMaxima) {
+  return new Promise ((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        let largura = img.width;
+        let altura = img.height;
+
+        if (largura > larguraMaxima || altura > alturaMaxima) {
+          const proporcao = Math.min(larguraMaxima / largura, alturaMaxima / altura);
+          largura *= proporcao;
+          altura *= proporcao;
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = largura;
+        canvas.height = altura;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, largura, altura);
+        resolve(canvas.toDataURL(arquivo.type));
+      };
+      img.src = event.target.result;
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(arquivo);
   });
 }
 document.getElementById("btn-transcrever")
 .addEventListener("click", async () => {
     const arquivos = Array.from(document.getElementById("fotos").files);
-    const fotos = [];
-    for (const arquivo of arquivos) {
-        const conteudo = await lerComoBase64(arquivo);
-        fotos.push({
-            nome: arquivo.name,
-            tipo: arquivo.type,
-            tamanho: arquivo.size,
-            conteudo: conteudo
+    let resultadoFinal;
+
+    for (let i = 0; i < arquivos.length; i++) {
+        document.getElementById("res-transcricao").textContent = `Enviando ${i + 1} de ${arquivos.length}...`;
+
+        const conteudo = await redimensionarImagem(arquivos[i], 800, 600);
+        const reposta = await fetch("/transcrever", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                tema: document.getElementById("tema").value,
+                conteudo: document.getElementById("conteudo").value,
+                foto: {
+                    nome: arquivos[i].name,
+                    tipo: arquivos[i].type,
+                    tamanho: arquivos[i].size,
+                    conteudo: conteudo
+                }
+            })
         });
+        resultadoFinal = await reposta.json();
     }
-    const reposta = await fetch("/transcrever", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            tema: document.getElementById("tema").value,
-            conteudo: document.getElementById("conteudo").value,
-            fotos: fotos
-        })
-    });
-    const texto = await reposta.json();
-    document.getElementById("res-transcricao").textContent = JSON.stringify(texto);
+
+    document.getElementById("res-transcricao").textContent = JSON.stringify(resultadoFinal);
 });
+
    </script>
 </body>
 </html>

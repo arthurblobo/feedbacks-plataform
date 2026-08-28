@@ -12,11 +12,8 @@ app.get("/ping", (req, res) => {
 });
 
 app.post("/transcrever", (req, res) => {
-    const fotos = req.body.fotos;
-
-    fotos.forEach(foto => {
-        console.log(`recebida imagem "${foto.nome}" do tipo ${foto.tipo} com tamanho ${foto.tamanho} bytes`);
-    });
+    const foto = req.body.foto;
+    console.log(`recebida imagem "${foto.nome}" do tipo ${foto.tipo} com tamanho ${foto.tamanho} bytes`);
 
     const resultado = transcrever();
     res.json(resultado);
