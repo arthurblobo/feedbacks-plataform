@@ -19,6 +19,9 @@
         <input type="file" id="fotos" accept="image/*" multiple>
          <button id="btn-transcrever">Transcrever</button>
    </div>
+   <div id="res-transcricao">
+
+   </div>
    <div class="escopo-geracao">
         <h2>Confira a transcrição</h2>
         <h4>Corrija o que estiver errado antes de gerar os feedbacks.</h4>
@@ -29,5 +32,13 @@
         <h2>Feedbacks</h2>
         <!-- Caixa com o feedback do aluno -->
    </div>
+   <script>
+        document.getElementById("btn-transcrever")
+        .addEventListener("click", async () => {
+            const reposta = await fetch("/ping");
+            const texto = await reposta.text();
+            document.getElementById("res-transcricao").textContent = texto;
+});
+   </script>
 </body>
 </html>
