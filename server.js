@@ -1,4 +1,4 @@
-const {transcrever} = require('./claude.js');
+const {transcrever, gerarFeedbacks} = require('./claude.js');
 
 const express = require('express');
 const app = express();
@@ -17,6 +17,12 @@ app.post("/transcrever", (req, res) => {
 
     const resultado = transcrever();
     res.json(resultado);
+});
+
+app.post("/gerar-feedbacks", (req, res) => {
+    const alunos = req.body.alunos;
+    const feedbacks = gerarFeedbacks(alunos);
+    res.json(feedbacks);
 });
 
 app.listen(3000, () => {

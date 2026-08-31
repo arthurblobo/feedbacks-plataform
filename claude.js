@@ -12,4 +12,13 @@ function transcrever() {
   }
 }
 
-module.exports = { transcrever };
+function gerarFeedbacks(alunos) {
+  if (USAR_MOCK) {
+    return alunos.map(aluno => ({
+      nome: aluno.nome,
+      feedback: `${aluno.nome}, sua resposta precisa de atenção na gramática. Revise o uso do verbo e tente reescrever a frase.`
+    }));
+  }
+}
+
+module.exports = { transcrever, gerarFeedbacks };
