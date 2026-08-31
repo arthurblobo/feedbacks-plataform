@@ -49,6 +49,7 @@ body {
 }
 
 input[type="text"],
+input[type="password"],
 textarea {
     width: 100%;
     padding: 10px 12px;
@@ -155,4 +156,99 @@ button:hover {
 
 .btn-copiar:hover {
     background-color: #dcebe1;
+}
+
+/* animações — entrada suave dos cartões da página principal */
+@keyframes surgir {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cabecalho,
+.escopo-transcricao,
+.escopo-geracao,
+.feedbacks-gerados {
+    animation: surgir 0.45s ease-out both;
+}
+
+.escopo-transcricao {
+    animation-delay: 0.08s;
+}
+
+.escopo-geracao {
+    animation-delay: 0.16s;
+}
+
+.feedbacks-gerados {
+    animation-delay: 0.24s;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* página de login */
+.pagina-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    max-width: none;
+    padding: 16px;
+}
+
+.login-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+    animation: surgir 0.5s ease-out both;
+}
+
+.login-card h1 {
+    color: #2c6e49;
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+}
+
+.login-card h3 {
+    color: #666666;
+    font-weight: normal;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.login-card input {
+    margin-bottom: 12px;
+}
+
+.login-card button {
+    width: 100%;
+}
+
+.erro-login {
+    color: #c0392b;
+    font-size: 0.9rem;
+    margin: 14px 0 0;
+}
+
+@keyframes tremer {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+.erro-shake {
+    animation: tremer 0.4s ease-in-out;
 }
