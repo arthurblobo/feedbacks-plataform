@@ -22,9 +22,19 @@ function exigirLogin(req, res, next) {
     }
 }
 
+const usuariosValidos = [
+    { usuario: process.env.USUARIO_1, senha: process.env.SENHA_1 },
+    { usuario: process.env.USUARIO_2, senha: process.env.SENHA_2 }
+];
+
 app.post("/login", (req, res) => {
-    if (req.body.usuario === process.env.USUARIO && req.body.senha === process.env.SENHA) {
+    const valido = usuariosValidos.some(
+        u => u.usuario === req.body.usuario && u.senha === req.body.senha
+    );
+
+    if (valido) {
         req.session.autenticado = true;
+        req.session.usuario = req.body.usuario;
         res.json({ ok: true });
     } else {
         res.status(401).json({ ok: false });
@@ -44,18 +54,28 @@ app.get("/ping", (req, res) => {
     res.send("oi, servidor no ar!");
 });
 
-app.post("/transcrever", (req, res) => {
-    const foto = req.body.foto;
-    console.log(`recebida imagem "${foto.nome}" do tipo ${foto.tipo} com tamanho ${foto.tamanho} bytes`);
+app.post("/transcrever", async (req, res) => {
+    try {
+        const foto = req.body.foto;
+        console.log(`recebida imagem "${foto.nome}" do tipo ${foto.tipo} com tamanho ${foto.tamanho} bytes`);
 
-    const resultado = transcrever();
-    res.json(resultado);
+        const tabela = await transcrever(foto);
+        res.json({ tabela });
+    } catch (erro) {
+        console.error("Erro ao transcrever:", erro);
+        res.status(500).json({ erro: "Falha ao transcrever a imagem." });
+    }
 });
 
-app.post("/gerar-feedbacks", (req, res) => {
-    const alunos = req.body.alunos;
-    const feedbacks = gerarFeedbacks(alunos);
-    res.json(feedbacks);
+app.post("/gerar-feedbacks", async (req, res) => {
+    try {
+        const { tema, conteudo, tabela } = req.body;
+        const feedbacks = await gerarFeedbacks(tema, conteudo, tabela, req.session.usuario);
+        res.json({ feedbacks });
+    } catch (erro) {
+        console.error("Erro ao gerar feedbacks:", erro);
+        res.status(500).json({ erro: "Falha ao gerar feedbacks." });
+    }
 });
 
 app.listen(3000, () => {

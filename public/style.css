@@ -158,6 +158,17 @@ button:hover {
     background-color: #dcebe1;
 }
 
+#texto-feedbacks {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    background-color: #fafafa;
+    border: 1px solid #eeeeee;
+    border-radius: 8px;
+    padding: 14px;
+    margin: 12px 0;
+}
+
 /* animações — entrada suave dos cartões da página principal */
 @keyframes surgir {
     from {

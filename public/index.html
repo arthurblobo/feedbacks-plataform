@@ -60,27 +60,49 @@
     reader.readAsDataURL(arquivo);
   });
 }
-function criarTabelaHtml(dados) {
-    const linhas = dados.map(aluno => `
+function linhasDaTabelaMarkdown(texto) {
+    return texto
+        .trim()
+        .split("\n")
+        .map(linha => linha.split("|").map(celula => celula.trim()).filter(c => c !== ""))
+        .filter(colunas => colunas.length >= 3)
+        .filter(colunas => !/^-+$/.test(colunas[0]))
+        .filter(colunas => colunas[0].toLowerCase() !== "nome")
+        .map(colunas => ({
+            nome: colunas[0],
+            questao: colunas[1],
+            respostaAluno: colunas[2]
+        }));
+}
+
+function criarTabelaHtml(alunos) {
+    const linhas = alunos.map(aluno => `
         <tr>
             <td contenteditable="true">${aluno.nome}</td>
-            <td contenteditable="true">${aluno.resposta}</td>
+            <td contenteditable="true">${aluno.questao}</td>
+            <td contenteditable="true">${aluno.respostaAluno}</td>
         </tr>
     `).join("");
 
     return `
         <table>
-            <tr><th>Nome</th><th>Resposta</th></tr>
+            <tr><th>Nome</th><th>Questão</th><th>O que o aluno escreveu</th></tr>
             ${linhas}
         </table>
     `;
+}
+
+function tabelaParaMarkdown(alunos) {
+    const cabecalho = "Nome | Questão | O que o aluno escreveu";
+    const linhas = alunos.map(a => `${a.nome} | ${a.questao} | ${a.respostaAluno}`);
+    return [cabecalho, ...linhas].join("\n");
 }
 
 document.getElementById("btn-transcrever")
 .addEventListener("click", async () => {
     try {
         const arquivos = Array.from(document.getElementById("fotos").files);
-        let resultadoFinal;
+        const todosOsAlunos = [];
 
         for (let i = 0; i < arquivos.length; i++) {
             document.getElementById("res-transcricao").textContent = `Enviando ${i + 1} de ${arquivos.length}...`;
@@ -100,10 +122,14 @@ document.getElementById("btn-transcrever")
                     }
                 })
             });
-            resultadoFinal = await reposta.json();
+            const dados = await reposta.json();
+            if (!reposta.ok) {
+                throw new Error(dados.erro || "Falha ao transcrever a imagem.");
+            }
+            todosOsAlunos.push(...linhasDaTabelaMarkdown(dados.tabela));
         }
 
-        document.getElementById("res-transcricao").innerHTML = criarTabelaHtml(resultadoFinal);
+        document.getElementById("res-transcricao").innerHTML = criarTabelaHtml(todosOsAlunos);
     } catch (erro) {
         console.error("Erro ao transcrever:", erro);
         document.getElementById("res-transcricao").textContent = "Algo deu errado. Tente novamente.";
@@ -121,23 +147,31 @@ document.getElementById("btn-gerar-feedbacks")
 
         const alunos = Array.from(tabela.rows).slice(1).map(row => ({
             nome: row.cells[0].textContent.trim(),
-            resposta: row.cells[1].textContent.trim()
+            questao: row.cells[1].textContent.trim(),
+            respostaAluno: row.cells[2].textContent.trim()
         }));
 
         const resposta = await fetch("/gerar-feedbacks", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ alunos })
+            body: JSON.stringify({
+                tema: document.getElementById("tema").value,
+                conteudo: document.getElementById("conteudo").value,
+                tabela: tabelaParaMarkdown(alunos)
+            })
         });
 
-        const feedbacks = await resposta.json();
+        const dados = await resposta.json();
+        if (!resposta.ok) {
+            throw new Error(dados.erro || "Falha ao gerar feedbacks.");
+        }
+        const { feedbacks } = dados;
         const feedbacksContainer = document.querySelector(".feedbacks-gerados");
-        feedbacksContainer.innerHTML = "<h2>Feedbacks</h2>" + feedbacks.map(f => `
-            <div class="feedback-item">
-                <p><strong>${f.nome}:</strong> ${f.feedback}</p>
-                <button class="btn-copiar" data-feedback="${f.feedback}">Copiar</button>
-            </div>
-        `).join("");
+        feedbacksContainer.innerHTML = `
+            <h2>Feedbacks</h2>
+            <pre id="texto-feedbacks">${feedbacks}</pre>
+            <button class="btn-copiar">Copiar tudo</button>
+        `;
     } catch (erro) {
         console.error("Erro ao gerar feedbacks:", erro);
         document.querySelector(".feedbacks-gerados").innerHTML = "<h2>Feedbacks</h2><p>Algo deu errado. Tente novamente.</p>";
@@ -149,10 +183,10 @@ document.querySelector(".feedbacks-gerados")
     if (!evento.target.classList.contains("btn-copiar")) {
         return;
     }
-    const texto = evento.target.dataset.feedback;
+    const texto = document.getElementById("texto-feedbacks").textContent;
     await navigator.clipboard.writeText(texto);
     evento.target.textContent = "Copiado!";
-    setTimeout(() => { evento.target.textContent = "Copiar"; }, 1500);
+    setTimeout(() => { evento.target.textContent = "Copiar tudo"; }, 1500);
 });
    </script>
 </body>

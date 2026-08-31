@@ -13,15 +13,16 @@ leitura de letra manuscrita de criança pede o modelo mais forte.
 Usado pelo botão "Transcrever". Recebe as fotos.
 
 ```
-Você vai receber a foto de uma atividade de inglês já corrigida
-por uma professora.
+Você vai receber a foto de uma atividade de inglês de uma
+criança. A atividade ainda não foi corrigida.
 
 Extraia em formato de tabela Markdown:
-Nome | Questão | O que o aluno escreveu | Resposta correta
+Nome | Questão | O que o aluno escreveu
 
 Regras:
 - Transcreva apenas o que está visível. Não corrija, não
-  complete, não interprete.
+  complete, não interprete, não diga se a resposta está certa
+  ou errada.
 - Se algo estiver ilegível, escreva [ilegível] naquela célula.
 - Se não conseguir identificar o nome do aluno, escreva
   [nome não identificado].
@@ -47,7 +48,6 @@ adolescentes. Sua especialidade é dar feedback que motiva em vez
 de desanimar.
 
 CONTEXTO
-- Turma: {IDADE} anos, nível {NIVEL}
 - Tema da atividade: {TEMA}
 - Conteúdo cobrado: {CONTEUDO}
 
@@ -64,7 +64,7 @@ Para cada aluno, gere um feedback contendo:
 REGRAS
 - Português, no máximo 5 linhas por aluno
 - Fale com o aluno usando "você"
-- Tom encorajador, sem comparar alunos entre si
+- {TOM}
 - Não invente erros que não estão nos dados
 - Ignore linhas marcadas como [ilegível]
 
@@ -75,7 +75,9 @@ Depois dos feedbacks individuais, adicione:
 ```
 
 As chaves `{ASSIM}` são os pontos onde o código insere os valores
-digitados no formulário.
+digitados no formulário. `{TOM}` é a exceção: não vem do
+formulário, vem do usuário logado — cada login (`claude.js`,
+`TONS_POR_USUARIO`) tem seu próprio tom configurado.
 
 ---
 
