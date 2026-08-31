@@ -78,6 +78,8 @@ app.post("/gerar-feedbacks", async (req, res) => {
     }
 });
 
-app.listen(3000, () => {
-    console.log("Servidor rodando na porta 3000");
+const PORTA = process.env.PORT || 3000;
+
+app.listen(PORTA, () => {
+    console.log(`Servidor rodando na porta ${PORTA}`);
 });
