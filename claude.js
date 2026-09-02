@@ -9,8 +9,8 @@ function extrairTexto(resposta) {
   return blocoDeTexto ? blocoDeTexto.text : "";
 }
 
-const PROMPT_TRANSCRICAO = `Você vai receber a foto de uma atividade de inglês de uma
-criança. A atividade ainda não foi corrigida.
+const PROMPT_TRANSCRICAO = `Você vai receber a foto ou o PDF de uma ou mais atividades de
+inglês de crianças. As atividades ainda não foram corrigidas.
 
 Extraia em formato de tabela Markdown:
 Nome | Questão | O que o aluno escreveu
@@ -22,6 +22,8 @@ Regras:
 - Se algo estiver ilegível, escreva [ilegível] naquela célula.
 - Se não conseguir identificar o nome do aluno, escreva
   [nome não identificado].
+- Se houver mais de um aluno no arquivo, inclua uma linha por
+  aluno na mesma tabela.
 - Não gere feedback nenhum nesta etapa.
 
 Responda apenas com a tabela, sem texto antes ou depois.`;
@@ -64,17 +66,18 @@ Ana Silva | 1 | She go to school every day.
   }
 
   const base64SemPrefixo = foto.conteudo.split(",")[1];
+  const ehPdf = foto.tipo === "application/pdf";
 
   const resposta = await client.messages.create({
     model: "claude-sonnet-5",
-    max_tokens: 2048,
+    max_tokens: ehPdf ? 4096 : 2048,
     system: PROMPT_TRANSCRICAO,
     messages: [
       {
         role: "user",
         content: [
           {
-            type: "image",
+            type: ehPdf ? "document" : "image",
             source: {
               type: "base64",
               media_type: foto.tipo,

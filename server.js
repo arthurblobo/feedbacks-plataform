@@ -6,7 +6,7 @@ const express = require('express');
 const session = require('express-session');
 const app = express();
 
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "20mb" }));
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -57,7 +57,7 @@ app.get("/ping", (req, res) => {
 app.post("/transcrever", async (req, res) => {
     try {
         const foto = req.body.foto;
-        console.log(`recebida imagem "${foto.nome}" do tipo ${foto.tipo} com tamanho ${foto.tamanho} bytes`);
+        console.log(`recebido arquivo "${foto.nome}" do tipo ${foto.tipo} com tamanho ${foto.tamanho} bytes`);
 
         const tabela = await transcrever(foto);
         res.json({ tabela });
