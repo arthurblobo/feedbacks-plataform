@@ -109,7 +109,11 @@ function tabelaParaMarkdown(alunos) {
 }
 
 document.getElementById("btn-transcrever")
-.addEventListener("click", async () => {
+.addEventListener("click", async (evento) => {
+    const botao = evento.target;
+    botao.disabled = true;
+    botao.textContent = "Transcrevendo...";
+
     try {
         const arquivos = Array.from(document.getElementById("fotos").files);
         const todosOsAlunos = [];
@@ -146,17 +150,25 @@ document.getElementById("btn-transcrever")
     } catch (erro) {
         console.error("Erro ao transcrever:", erro);
         document.getElementById("res-transcricao").textContent = "Algo deu errado. Tente novamente.";
+    } finally {
+        botao.disabled = false;
+        botao.textContent = "Transcrever";
     }
 });
 
 document.getElementById("btn-gerar-feedbacks")
-.addEventListener("click", async () => {
+.addEventListener("click", async (evento) => {
+    const tabela = document.querySelector("#res-transcricao table");
+    if (!tabela) {
+        alert("Nenhuma transcrição encontrada para gerar feedbacks.");
+        return;
+    }
+
+    const botao = evento.target;
+    botao.disabled = true;
+    botao.textContent = "Gerando...";
+
     try {
-        const tabela = document.querySelector("#res-transcricao table");
-        if (!tabela) {
-            alert("Nenhuma transcrição encontrada para gerar feedbacks.");
-            return;
-        }
 
         const alunos = Array.from(tabela.rows).slice(1).map(row => ({
             nome: row.cells[0].textContent.trim(),
@@ -188,6 +200,9 @@ document.getElementById("btn-gerar-feedbacks")
     } catch (erro) {
         console.error("Erro ao gerar feedbacks:", erro);
         document.querySelector(".feedbacks-gerados").innerHTML = "<h2>Feedbacks</h2><p>Algo deu errado. Tente novamente.</p>";
+    } finally {
+        botao.disabled = false;
+        botao.textContent = "Gerar feedbacks";
     }
 });
 

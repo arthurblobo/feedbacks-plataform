@@ -81,6 +81,11 @@ button {
     transition: background-color 0.15s ease-in-out;
 }
 
+button:disabled {
+    background-color: #a9bfb2;
+    cursor: not-allowed;
+}
+
 button:hover {
     background-color: #1f4f34;
 }
