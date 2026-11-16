@@ -26,7 +26,11 @@ A professora tira fotos das atividades, envia pela página, revisa a transcriç�
 - **Sessão**: `express-session`, autenticação simples via `.env`
 - **Deploy**: Render
 
-## Rodando localmente
+## Acesso
+
+O projeto está no ar em **[feedbacks-plataform.onrender.com](https://feedbacks-plataform.onrender.com)**, hospedado no Render. O acesso é restrito: só entra quem tem usuário e senha.
+
+### Rodando localmente (desenvolvimento)
 
 ```
 npm install
